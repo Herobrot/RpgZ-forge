@@ -1,14 +1,9 @@
 package net.rpgz.mixin;
 
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Mutable;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -27,7 +22,7 @@ public abstract class InGameHudMixin {
   @Shadow
   @Final
   @Mutable
-  private final Minecraft minecraft;
+  protected final Minecraft minecraft;
 
   public InGameHudMixin(Minecraft mc) {
     this.minecraft = mc;
@@ -35,16 +30,16 @@ public abstract class InGameHudMixin {
 
   @Inject(method = "render", at = @At(value = "TAIL"))
   private void renderIngameGuiMixin(GuiGraphics pGuiGraphics, float f, CallbackInfo info) {
-    this.renderLootBag(pGuiGraphics);
+    this.rpgZ_forge$renderLootBag(pGuiGraphics);
     System.out.println("Graphics");
   }
 
-  private void renderLootBag(GuiGraphics guiComponent) {
+  @Unique
+  private void rpgZ_forge$renderLootBag(GuiGraphics guiComponent) {
     if (this.minecraft.hitResult != null && this.minecraft.hitResult.getType() == HitResult.Type.ENTITY) {
       Entity entity = ((EntityHitResult) this.minecraft.hitResult).getEntity();
-      if (entity instanceof Mob) {
-    	  Mob deadBody = (Mob) entity;
-        if (deadBody != null && deadBody.deathTime > 20) {
+      if (entity instanceof Mob deadBody) {
+          if (deadBody.deathTime > 20) {
           int scaledWidth = this.minecraft.getWindow().getGuiScaledWidth();
           int scaledHeight = this.minecraft.getWindow().getGuiScaledHeight();
           guiComponent.blit(new ResourceLocation("rpgz:textures/sprite/loot_bag.png"), (scaledWidth / 2), (scaledHeight / 2) - 16, 0.0F, 0.0F, 16, 16, 16,

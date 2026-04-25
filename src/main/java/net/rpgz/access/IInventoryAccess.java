@@ -5,8 +5,8 @@ import net.minecraft.world.item.ItemStack;
 
 public interface IInventoryAccess {
 
-    public SimpleContainer getDropsInventory();
-    public void setDropsInventory(SimpleContainer inventory);
+    SimpleContainer rpgZ_forge$getDropsInventory();
+    void rpgZ_forge$setDropsInventory(SimpleContainer inventory);
 
-    public void addingInventoryItems(ItemStack stack);
+    void rpgZ_forge$addingInventoryItems(ItemStack stack);
 }

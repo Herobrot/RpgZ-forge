@@ -8,7 +8,6 @@ logoFile="icon.png"
 modId="rpgz"
 version="${mod_version}"
 displayName="RpgZ"
-updateJSONURL="https://raw.githubusercontent.com/Globox1997/RpgZ/master/update.json"
 displayURL="https://www.curseforge.com/minecraft/mc-mods/rpgz"
 credits="Obviously you for downloading this mod"
 authors="Globox_Z, Stereowalker"
@@ -32,11 +31,5 @@ Rpg Style Looting
     modId="minecraft"
     mandatory=true
     versionRange="[${minecraft_version},)"
-    ordering="NONE"
-    side="BOTH"
-[[dependencies.rpgz]]
-    modId="cloth_config"
-    mandatory=true
-    versionRange="[${clothConfigVersion},)"
     ordering="NONE"
     side="BOTH"

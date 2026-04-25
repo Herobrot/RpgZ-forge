@@ -1,7 +1,6 @@
 package net.rpgz.mixin;
 
-import java.util.List;
-
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -10,7 +9,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.model.EntityModel;
@@ -18,7 +16,6 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
-import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -32,10 +29,8 @@ extends EntityRenderer<T> implements RenderLayerParent<T, M> {
 
 	@Shadow
 	protected M model;
-	@Shadow
-	protected final List<RenderLayer<T, M>> layers = Lists.newArrayList();
 
-	public LivingEntityRendererMixin(EntityRendererProvider.Context dispatcher, M entityModel) {
+	public LivingEntityRendererMixin(EntityRendererProvider.Context dispatcher) {
 		super(dispatcher);
 	}
 
@@ -100,11 +95,11 @@ extends EntityRenderer<T> implements RenderLayerParent<T, M> {
 			if (f > 1.0F) {
 				f = 1.0F;
 			}
-			Float lyinganglebonus = 1F;
+			float lyinganglebonus = 1F;
 			if (this.getFlipDegrees(entity) > 90F) {
 				lyinganglebonus = 2.5F;
 			}
-			matrices.translate(0.0D, (double) ((entity.getBbWidth() / 4.0D) * f) * lyinganglebonus, 0.0D);
+			matrices.translate(0.0D, (entity.getBbWidth() / 4.0D) * f * lyinganglebonus, 0.0D);
 			if (entity.isBaby()) {
 				// (double) -((entity.getHeight()) * f) * lyinganglebonus
 				matrices.translate(-(double) ((entity.getBbHeight() / 2) * f), 0.0D, 
@@ -114,13 +109,10 @@ extends EntityRenderer<T> implements RenderLayerParent<T, M> {
 		}
 	}
 
-	@Redirect(method = "Lnet/minecraft/client/renderer/entity/LivingEntityRenderer;setupRotations(Lnet/minecraft/world/entity/LivingEntity;Lcom/mojang/blaze3d/vertex/PoseStack;FFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/LivingEntityRenderer;isShaking(Lnet/minecraft/world/entity/LivingEntity;)Z"))
+	@Redirect(method = "setupRotations(Lnet/minecraft/world/entity/LivingEntity;Lcom/mojang/blaze3d/vertex/PoseStack;FFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/LivingEntityRenderer;isShaking(Lnet/minecraft/world/entity/LivingEntity;)Z"))
 	public boolean isShakingMixin(LivingEntityRenderer<T, M> renderer, T entity, T secondentity, PoseStack matrix, float o, float k, float m) {
 		if (entity instanceof Mob)
-			if (!entity.isDeadOrDying() && this.isShaking(entity))
-				return true;
-			else
-				return false;
+            return !entity.isDeadOrDying() && this.isShaking(entity);
 		else
 			return false;
 	}
@@ -132,7 +124,7 @@ extends EntityRenderer<T> implements RenderLayerParent<T, M> {
 	}
 
 	@Shadow
-	public M getModel() {
+	public @NotNull M getModel() {
 		return this.model;
 	}
 

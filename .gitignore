@@ -31,3 +31,5 @@ CREDITS.txt
 run/
 *.launch
 /Java Projects/
+
+.idea/

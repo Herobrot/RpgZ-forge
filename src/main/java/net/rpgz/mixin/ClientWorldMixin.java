@@ -14,7 +14,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public abstract class ClientWorldMixin {
 
-  @Redirect(method = "Lnet/minecraft/client/multiplayer/ClientLevel;tickNonPassenger(Lnet/minecraft/world/entity/Entity;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;tick()V"))
+  @Redirect(method = "tickNonPassenger(Lnet/minecraft/world/entity/Entity;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;tick()V"))
   public void tickEntityMixin(Entity entity) {
     if (entity instanceof Mob) {
       if (!entity.isAlive()) {

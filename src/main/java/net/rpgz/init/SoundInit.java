@@ -2,19 +2,20 @@ package net.rpgz.init;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraftforge.registries.RegisterEvent.RegisterHelper;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 public class SoundInit {
 
-  public static final ResourceLocation LOOT_SOUND = new ResourceLocation("rpgz:loot");
-  public static final ResourceLocation COIN_LOOT_SOUND = new ResourceLocation("rpgz:coin_loot");
+    public static final DeferredRegister<SoundEvent> SOUND_EVENTS =
+            DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, "rpgz");
 
-  public static SoundEvent LOOT_SOUND_EVENT = SoundEvent.createVariableRangeEvent(LOOT_SOUND);
-  public static SoundEvent COIN_LOOT_SOUND_EVENT = SoundEvent.createVariableRangeEvent(COIN_LOOT_SOUND);
+    public static final RegistryObject<SoundEvent> LOOT_SOUND_EVENT =
+            SOUND_EVENTS.register("loot", () ->
+                    SoundEvent.createVariableRangeEvent(new ResourceLocation("rpgz", "loot")));
 
-  public static void registerAll(RegisterHelper<SoundEvent> helper) {
-		helper.register(LOOT_SOUND, LOOT_SOUND_EVENT);
-		helper.register(COIN_LOOT_SOUND, COIN_LOOT_SOUND_EVENT);
-	}
-
+    public static final RegistryObject<SoundEvent> COIN_LOOT_SOUND_EVENT =
+            SOUND_EVENTS.register("coin_loot", () ->
+                    SoundEvent.createVariableRangeEvent(new ResourceLocation("rpgz", "coin_loot")));
 }

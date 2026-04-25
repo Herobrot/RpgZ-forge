@@ -10,13 +10,10 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.rpgz.init.SoundInit;
 import net.rpgz.init.TagInit;
+import org.jetbrains.annotations.NotNull;
 
 public class LivingEntityScreenHandler extends AbstractContainerMenu {
    private final SimpleContainer inventory;
-
-   public LivingEntityScreenHandler(int syncId, Inventory playerInventory) {
-      this(syncId, playerInventory, new SimpleContainer());
-   }
 
    public LivingEntityScreenHandler(int syncId, Inventory playerInventory, SimpleContainer simpleInventory) {
       super(MenuType.GENERIC_9x1, syncId);
@@ -26,7 +23,7 @@ public class LivingEntityScreenHandler extends AbstractContainerMenu {
       for (m = 0; m < 9; ++m) {
          this.addSlot(new Slot(inventory, m, 8 + m * 18, 20) {
             @Override
-            public boolean mayPlace(ItemStack stack) {
+            public boolean mayPlace(@NotNull ItemStack stack) {
                return false;
             }
          });
@@ -43,16 +40,16 @@ public class LivingEntityScreenHandler extends AbstractContainerMenu {
    }
 
    @Override
-   public boolean stillValid(Player player) {
+   public boolean stillValid(@NotNull Player player) {
       return true;
    }
 
    @Override
-   public ItemStack quickMoveStack(Player player, int index) {
-      Boolean rareItem = false;
+   public @NotNull ItemStack quickMoveStack(@NotNull Player player, int index) {
+      boolean rareItem = false;
       ItemStack itemStack = ItemStack.EMPTY;
-      Slot slot = (Slot) this.slots.get(index);
-      if (slot != null && slot.hasItem()) {
+      Slot slot = this.slots.get(index);
+      if (slot.hasItem()) {
          ItemStack itemStack2 = slot.getItem();
          itemStack = itemStack2.copy();
          if (itemStack.is(TagInit.RARE_ITEMS)) {
@@ -73,9 +70,9 @@ public class LivingEntityScreenHandler extends AbstractContainerMenu {
       }
 
       if (rareItem) {
-         player.playNotifySound(SoundInit.COIN_LOOT_SOUND_EVENT, SoundSource.PLAYERS, 1F, 1F);
+         player.playNotifySound(SoundInit.COIN_LOOT_SOUND_EVENT.get(), SoundSource.PLAYERS, 1F, 1F);
       } else {
-         player.playNotifySound(SoundInit.LOOT_SOUND_EVENT, SoundSource.PLAYERS, 1F, 1F);
+         player.playNotifySound(SoundInit.LOOT_SOUND_EVENT.get(), SoundSource.PLAYERS, 1F, 1F);
       }
 
       return itemStack;

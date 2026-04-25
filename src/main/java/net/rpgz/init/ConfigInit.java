@@ -5,11 +5,12 @@ import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.rpgz.config.RpgzConfig;
 
 public class ConfigInit {
-  public static RpgzConfig CONFIG = new RpgzConfig();
 
   public static void init() {
     AutoConfig.register(RpgzConfig.class, GsonConfigSerializer::new);
-    CONFIG = AutoConfig.getConfigHolder(RpgzConfig.class).getConfig();
   }
 
+  public static RpgzConfig get() {
+    return AutoConfig.getConfigHolder(RpgzConfig.class).getConfig();
+  }
 }

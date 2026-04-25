@@ -1,11 +1,12 @@
 package net.rpgz.mixin;
 
-import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.IntStream;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -24,37 +25,33 @@ import net.rpgz.init.ConfigInit;
 
 @Mixin(HopperBlockEntity.class)
 public abstract class HopperBlockEntityMixin {
-    private static int ticking = 0;
+    @Unique
+    private static int rpgZ_forge$ticking = 0;
 
-    @Inject(method = "Lnet/minecraft/world/level/block/entity/HopperBlockEntity;suckInItems(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/level/block/entity/Hopper;)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/entity/HopperBlockEntity;getItemsAtAndAbove(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/level/block/entity/Hopper;)Ljava/util/List;"), cancellable = true)
+    @Inject(method = "suckInItems(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/level/block/entity/Hopper;)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/entity/HopperBlockEntity;getItemsAtAndAbove(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/level/block/entity/Hopper;)Ljava/util/List;"), cancellable = true)
     private static void extractMixin(Level level, Hopper hopper, CallbackInfoReturnable<Boolean> info) {
-        if (ConfigInit.CONFIG.hopper_extracting) {
-            ticking++;
-            if (ticking >= 20) {
+        if (ConfigInit.get().hopper_extracting) {
+            rpgZ_forge$ticking++;
+            if (rpgZ_forge$ticking >= 20) {
                 BlockPos pos = BlockPos.containing(hopper.getLevelX(), hopper.getLevelY(), hopper.getLevelZ());
                 AABB box = new AABB(pos).expandTowards(0.0D, 1.0D, 0.0D);
                 List<LivingEntity> list = level.getEntitiesOfClass(LivingEntity.class, box,
                         EntitySelector.NO_SPECTATORS);
                 if (!list.isEmpty()) {
-                    Iterator<LivingEntity> iterator = list.iterator();
-                    while (iterator.hasNext()) {
-                        LivingEntity livingEntity = (LivingEntity) iterator.next();
+                    for (LivingEntity livingEntity : list) {
                         if (livingEntity.isDeadOrDying()) {
-                            if (((IInventoryAccess) livingEntity).getDropsInventory() != null) {
+                            if (((IInventoryAccess) livingEntity).rpgZ_forge$getDropsInventory() != null) {
                                 Direction direction = Direction.DOWN;
                                 info.setReturnValue(
-                                        isEmptyContainer(((IInventoryAccess) livingEntity).getDropsInventory(), direction) ? false
-                                                : getSlots(((IInventoryAccess) livingEntity).getDropsInventory(),
-                                                        direction).anyMatch((i) -> {
-                                                            return tryTakeInItemFromSlot(hopper,
-                                                                    ((IInventoryAccess) livingEntity).getDropsInventory(), i,
-                                                                    direction);
-                                                        }));
+                                        !isEmptyContainer(((IInventoryAccess) livingEntity).rpgZ_forge$getDropsInventory(), direction) && Objects.requireNonNull(getSlots(((IInventoryAccess) livingEntity).rpgZ_forge$getDropsInventory(),
+                                                direction)).anyMatch((i) -> tryTakeInItemFromSlot(hopper,
+                                                        ((IInventoryAccess) livingEntity).rpgZ_forge$getDropsInventory(), i,
+                                                        direction)));
                             }
                         }
                     }
                 }
-                ticking = 0;
+                rpgZ_forge$ticking = 0;
             }
         }
     }
